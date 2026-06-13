@@ -17,9 +17,12 @@ version: latest
 section: api
 type: classes
 status:
-description:
 introduced-in:
+description:
 ---
+Поля `status`, `introduced-in`, `deprecated-in`, `removed-in`, `replacement` добавлять только если их значения подтверждены.
+
+Если значение неизвестно, поле не выводить.
 
 ## Основная структура страницы
 
