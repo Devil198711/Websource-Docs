@@ -1,0 +1,321 @@
+---
+title: WSMailer
+slug: wsmailer
+doc-id: wsmailer
+lang: ru
+version: latest
+section: api
+type: classes
+status: stable
+description: Класс для отправки email сообщений через SMTP или mail().
+introduced-in: 0.87
+---
+
+# WSMailer
+
+`WSMailer` — встроенный почтовый класс CMS WebSource для отправки email сообщений через SMTP или встроенную функцию PHP `mail()`.
+
+## Поддерживает
+
+- отправку через SMTP с авторизацией
+- автоматический fallback на `mail()`, если SMTP недоступен
+- текстовые и HTML-письма
+- автоматическую генерацию текстовой версии для HTML-писем
+- вложения
+- MIME-заголовки и кодировку UTF-8
+- проверку SMTP-соединения через `ping()`
+- получение информации о последнем транспорте и SMTP-ошибке
+
+## Быстрый старт
+
+```php
+$mailer = new WSMailer([
+    'smtp-host' => 'smtp.example.com',
+    'smtp-login' => 'robot@example.com',
+    'smtp-pass' => 'secret',
+    'from-email' => 'robot@example.com',
+    'from-name' => 'WebSource',
+    'smtp-secure' => 'tls',
+    'smtp-port' => 587
+]);
+
+$mailer->sendHtml(
+    'user@example.com',
+    'Добро пожаловать',
+    '<h1>Здравствуйте!</h1><p>Ваш аккаунт создан.</p>'
+);
+```
+
+## Конфигурация
+
+Конфигурация формируется из двух источников:
+
+- настроек из базы данных `options` с типом `email`
+- массива `$config`, переданного в `__construct()`
+
+Переданные параметры имеют приоритет над настройками из базы данных.
+
+### Параметры конфигурации
+
+| Параметр | Тип | Описание |
+|----------|-----|----------|
+| `smtp` / `smtp-host` | `string` | Адрес SMTP-сервера. |
+| `login` / `smtp-login` | `string` | Логин SMTP. |
+| `pass` / `smtp-pass` | `string` | Пароль SMTP. |
+| `email` / `from-email` | `string` | Email отправителя. Обязателен в итоговой конфигурации. |
+| `name` / `from-name` | `string` | Имя отправителя. |
+| `reply-to` | `string` | Email для ответа. По умолчанию совпадает с `from-email`. |
+| `smtp-secure` | `string` | Тип шифрования: `ssl`, `tls` или пустое значение. |
+| `smtp-port` | `number` | Порт SMTP. Если не задан, используется `465` для `ssl` и `587` для `tls`. |
+| `charset` / `input-charset` | `string` | Исходная кодировка текста. По умолчанию `utf-8`. |
+| `timeout` | `number` | Таймаут SMTP-соединения в секундах. Минимум `5`. |
+| `ehlo-host` | `string` | Значение для команды `EHLO`. Если не задано, вычисляется автоматически. |
+
+## Инициализация
+
+### __construct(array $config = [])
+
+Создаёт экземпляр класса и подготавливает итоговую конфигурацию.
+
+```php
+$mailer = new WSMailer();
+```
+
+```php
+$mailer = new WSMailer([
+    'from-email' => 'robot@example.com',
+    'from-name' => 'WebSource'
+]);
+```
+
+## Отправка писем
+
+### sendText(string $to, string $subject, string $text, array $attachments = []) : void
+
+Отправляет текстовое письмо.
+
+Параметры:
+
+| Параметр | Тип | Описание |
+|----------|-----|----------|
+| `to` | `string` | Email получателя. |
+| `subject` | `string` | Тема письма. |
+| `text` | `string` | Текст письма. |
+| `attachments` | `array` | Массив вложений. |
+
+Пример:
+
+```php
+$mailer->sendText(
+    'user@example.com',
+    'Проверка почты',
+    'Это тестовое письмо.'
+);
+```
+
+### sendHtml(string $to, string $subject, string $html, array $attachments = [], ?string $text = null) : void
+
+Отправляет HTML-письмо.
+
+Параметры:
+
+| Параметр | Тип | Описание |
+|----------|-----|----------|
+| `to` | `string` | Email получателя. |
+| `subject` | `string` | Тема письма. |
+| `html` | `string` | HTML-содержимое письма. |
+| `attachments` | `array` | Массив вложений. |
+| `text` | `string\|null` | Текстовая версия письма. Если не передана, будет создана автоматически из HTML. |
+
+Пример:
+
+```php
+$html = $mailer->mailHtmlTemplate(
+    '<h1>Восстановление доступа</h1><p>Перейдите по ссылке для продолжения.</p>',
+    'Если вы не запрашивали это письмо, просто проигнорируйте его.'
+);
+
+$mailer->sendHtml(
+    'user@example.com',
+    'Восстановление доступа',
+    $html
+);
+```
+
+## Проверка соединения
+
+### ping() : void
+
+Проверяет доступность SMTP-сервера.
+
+Если SMTP не настроен, метод просто завершится без ошибки.
+
+Пример:
+
+```php
+$mailer->ping();
+```
+
+## Получение состояния
+
+### getLastTransport() : string
+
+Возвращает транспорт, через который было отправлено последнее письмо.
+
+Возможные значения:
+
+- `smtp`
+- `mail`
+
+Пример:
+
+```php
+$mailer->sendText('user@example.com', 'Test', 'Hello');
+$transport = $mailer->getLastTransport();
+```
+
+### getLastSmtpError() : ?string
+
+Возвращает текст последней SMTP-ошибки, если во время отправки через SMTP произошёл сбой.
+
+Если SMTP-ошибки не было, возвращает `null`.
+
+Пример:
+
+```php
+try {
+    $mailer->sendText('user@example.com', 'Test', 'Hello');
+} catch (Throwable $e) {
+    $smtpError = $mailer->getLastSmtpError();
+}
+```
+
+## HTML-шаблон письма
+
+### mailHtmlTemplate(string $html, ?string $footerText = null) : string
+
+Формирует HTML-обёртку письма в стиле WebSource.
+
+Параметры:
+
+| Параметр | Тип | Описание |
+|----------|-----|----------|
+| `html` | `string` | Основное HTML-содержимое письма. |
+| `footerText` | `string\|null` | Текст в нижней части письма. |
+
+Возвращает:
+
+| Параметр | Тип | Описание |
+|----------|-----|----------|
+| `return` | `string` | Готовый HTML-шаблон письма. |
+
+Пример:
+
+```php
+$html = $mailer->mailHtmlTemplate(
+    '<h1>Добро пожаловать</h1><p>Спасибо за регистрацию.</p>',
+    'Команда WebSource'
+);
+```
+
+## Вложения
+
+Каждое вложение передаётся как элемент массива.
+
+Формат:
+
+```php
+[
+    'path' => '/absolute/path/to/file.pdf',
+    'name' => 'manual.pdf',
+    'mime' => 'application/pdf'
+]
+```
+
+Поддерживаемые ключи:
+
+| Ключ | Тип | Описание |
+|------|-----|----------|
+| `path` / `url` | `string` | Путь к файлу. Обязательный параметр. |
+| `name` | `string` | Имя файла в письме. Если не задано, используется имя исходного файла. |
+| `mime` / `type` | `string` | MIME-тип файла. Если не задан, определяется автоматически. |
+
+Пример:
+
+```php
+$mailer->sendText(
+    'user@example.com',
+    'Документы',
+    'Во вложении находится файл.',
+    [
+        [
+            'path' => '/var/www/files/report.pdf',
+            'name' => 'report.pdf',
+            'mime' => 'application/pdf'
+        ]
+    ]
+);
+```
+
+## Публичный API
+
+### __construct(array $config = [])
+
+Создаёт экземпляр почтового класса.
+
+### sendText(string $to, string $subject, string $text, array $attachments = []) : void
+
+Отправляет текстовое письмо.
+
+### sendHtml(string $to, string $subject, string $html, array $attachments = [], ?string $text = null) : void
+
+Отправляет HTML-письмо.
+
+### ping() : void
+
+Проверяет доступность SMTP-сервера.
+
+### getLastTransport() : string
+
+Возвращает транспорт последней отправки.
+
+### getLastSmtpError() : ?string
+
+Возвращает последнюю SMTP-ошибку.
+
+### mailHtmlTemplate(string $html, ?string $footerText = null) : string
+
+Создаёт HTML-обёртку письма.
+
+## Исключения
+
+Класс может выбрасывать стандартные исключения PHP:
+
+| Исключение | Когда возникает |
+|------------|-----------------|
+| `InvalidArgumentException` | Неверный email, пустая тема, неверная конфигурация, отсутствует путь к вложению. |
+| `RuntimeException` | Не удалось подключиться к SMTP, прочитать вложение, записать данные в сокет или отправить письмо через `mail()`. |
+
+## Ограничения и замечания
+
+- класс работает только с одним получателем за один вызов
+- в публичном API нет отдельных методов для `CC` и `BCC`
+- SMTP-аутентификация реализована через `AUTH LOGIN`
+- `ping()` проверяет только SMTP, но не работу `mail()`
+- при HTML-отправке текстовая версия письма создаётся автоматически, если `text` не передан
+- вложения должны существовать на диске и быть доступны для чтения
+- для загрузки конфигурации из базы данных класс использует глобальный объект `$WS_DB`
+- если `from-email` не задан явно, класс пытается определить его из `smtp-login` или `sendmail_from`
+
+## Что использовать
+
+Используйте `sendText()`, если:
+
+- письмо должно содержать только обычный текст
+- не нужна HTML-вёрстка
+
+Используйте `sendHtml()`, если:
+
+- письмо должно содержать HTML-разметку
+- нужна шаблонная обёртка письма
+- нужна автоматическая текстовая версия

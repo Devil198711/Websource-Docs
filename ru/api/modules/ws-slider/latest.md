@@ -1,0 +1,284 @@
+---
+title: WS Slider
+slug: ws-slider
+doc-id: ws-slider
+lang: ru
+version: latest
+section: api
+type: modules
+status: latest
+description: Модуль для создания слайдера с режимами carousel и ticker.
+introduced-in: 0.87
+---
+
+# WS Slider
+
+Модуль работает с DOM-структурой слайдера и поддерживает несколько режимов работы:
+
+## Поддерживает
+
+- два режима работы: `carousel` и `ticker`
+- пагинацию и кнопки навигации
+- автопрокрутку с настройкой задержки
+- паузу при наведении и взаимодействии пользователя
+- swipe-управление в режиме `carousel`
+- циклическое переключение в режиме `carousel`
+- настройку скорости и направления в режиме `ticker`
+- кастомизацию внутренних селекторов под свою DOM-структуру
+
+## Подключение
+
+```js
+import { wsSlider } from '/core/modules/ws-slider/assets/js/initial.js';
+```
+
+## Быстрый старт
+
+```html
+<div class="slider" data-slider>
+    <div class="slider-viewport" data-slider-viewport>
+        <div class="slider-track" data-slider-track>
+            <div class="slider-slide" data-slider-slide>1</div>
+            <div class="slider-slide" data-slider-slide>2</div>
+            <div class="slider-slide" data-slider-slide>3</div>
+        </div>
+    </div>
+
+    <button type="button" data-slider-prev>Prev</button>
+    <button type="button" data-slider-next>Next</button>
+    <div data-slider-pagination></div>
+</div>
+```
+
+```js
+import { wsSlider } from '/core/modules/ws-slider/assets/js/initial.js';
+
+const slider = wsSlider(document.querySelector('[data-slider]'), {
+    mode: 'carousel',
+    perView: 1,
+    gap: 20,
+    loop: true,
+    autoplay: true,
+    autoplayDelay: 4000,
+    swipe: true,
+    pagination: true
+});
+```
+
+## HTML-структура
+
+Модуль ожидает корневой контейнер с обязательными внутренними элементами `viewport`, `track` и хотя бы одним `slide`.
+
+Обязательные элементы:
+- `data-slider-viewport` — ограничивает видимую область слайдера
+- `data-slider-track` — содержит набор слайдов
+- `data-slider-slide` — отдельный слайд
+
+Опциональные элементы:
+- `data-slider-prev` — кнопка переключения назад
+- `data-slider-next` — кнопка переключения вперёд
+- `data-slider-pagination` — контейнер пагинации
+
+## Инициализация
+
+### Через wsSlider()
+
+Используйте этот вариант, если нужен быстрый старт без ручного управления экземпляром.
+
+```js
+const slider = wsSlider(document.querySelector('[data-slider]'), {
+    mode: 'carousel'
+});
+```
+
+## Параметры
+
+### Общие параметры
+
+| Параметр | Тип | Описание |
+|----------|-----|----------|
+| `mode` | `string` | Режим работы модуля. Поддерживаемые значения: `carousel`, `ticker`. |
+| `gap` | `number` | Расстояние между слайдами в пикселях. |
+| `breakpoints` | `object` | Объект адаптивных переопределений параметров по ширине viewport. |
+| `autoplay` | `boolean` | Включает автопрокрутку. Используется в режиме `carousel`. |
+| `autoplayDelay` | `number` | Интервал автопрокрутки в миллисекундах. |
+| `pauseOnHover` | `boolean` | Приостанавливает autoplay или ticker при наведении. |
+| `pauseOnInteraction` | `boolean` | Приостанавливает autoplay или ticker при взаимодействии пользователя. |
+| `pagination` | `boolean` | Включает генерацию и обновление кнопок пагинации. |
+| `selectors` | `object` | Позволяет переопределить селекторы внутренних элементов. |
+
+### Параметры режима carousel
+
+| Параметр | Тип | Описание |
+|----------|-----|----------|
+| `startIndex` | `number` | Индекс стартового слайда или страницы. |
+| `perView` | `number` | Количество слайдов, видимых одновременно. |
+| `step` | `number\|null` | Шаг переключения. Если не задан, используется значение `perView`. |
+| `transition` | `number` | Длительность анимации переключения в миллисекундах. |
+| `loop` | `boolean` | Включает циклическое переключение с использованием служебных клонов. |
+| `swipe` | `boolean` | Включает touch swipe для режима `carousel`. |
+| `swipeThreshold` | `number` | Минимальное горизонтальное смещение для распознавания swipe. |
+| `preventScrollOnSwipe` | `boolean` | Блокирует вертикальный скролл страницы, если жест распознан как горизонтальный swipe. |
+
+### Параметры режима ticker
+
+| Параметр | Тип | Описание |
+|----------|-----|----------|
+| `speed` | `number` | Скорость движения ленты. |
+| `direction` | `string` | Направление движения. Поддерживаемые значения: `left`, `right`. |
+
+### selectors
+
+| Параметр | Тип | Описание |
+|----------|-----|----------|
+| `selectors.viewport` | `string` | Селектор элемента viewport. |
+| `selectors.track` | `string` | Селектор контейнера track. |
+| `selectors.slide` | `string` | Селектор отдельных слайдов. |
+| `selectors.prev` | `string` | Селектор кнопки переключения назад. |
+| `selectors.next` | `string` | Селектор кнопки переключения вперёд. |
+| `selectors.pagination` | `string` | Селектор контейнера пагинации. |
+
+### breakpoints
+
+Через `breakpoints` можно переопределять параметры в зависимости от ширины viewport.
+
+```js
+const slider = wsSlider(document.querySelector('[data-slider]'), {
+    mode: 'carousel',
+    perView: 1,
+    gap: 16,
+    breakpoints: {
+        768: {
+            perView: 2,
+            gap: 24
+        },
+        1200: {
+            perView: 3,
+            gap: 32
+        }
+    }
+});
+```
+
+Рекомендуется использовать в `breakpoints` только те параметры, которые реально должны меняться на конкретной ширине экрана.
+
+## Режимы работы
+
+### carousel
+
+Режим пошагового или постраничного переключения слайдов.
+
+Когда использовать:
+- если нужно переключение по кнопкам `prev` / `next`
+- если нужна пагинация по страницам
+- если требуется autoplay с задержкой
+- если нужен swipe на мобильных устройствах
+- если слайды должны переключаться дискретно, а не двигаться непрерывной лентой
+
+Особенности режима:
+- использует анимированное смещение track
+- поддерживает `perView`, `step`, `gap` и `transition`
+- поддерживает `loop`
+- поддерживает `autoplay`
+- поддерживает `swipe`
+- поддерживает пагинацию
+- может начинаться с заданного `startIndex`
+
+Пример:
+
+```js
+const slider = wsSlider(document.querySelector('[data-slider]'), {
+    mode: 'carousel',
+    perView: 1,
+    step: 1,
+    gap: 20,
+    transition: 400,
+    loop: true,
+    autoplay: true,
+    autoplayDelay: 4000,
+    swipe: true,
+    pagination: true
+});
+```
+
+### ticker
+
+Режим непрерывного горизонтального движения содержимого.
+
+Когда использовать:
+- если нужен бесконечный бегущий ряд карточек, логотипов или баннеров
+- если не требуется дискретное переключение по страницам
+- если нужен эффект непрерывной ленты
+
+Особенности режима:
+- работает как непрерывная лента
+- автоматически собирает повторяющуюся дорожку для бесконечного движения
+- поддерживает `pauseOnHover`
+- поддерживает `pauseOnInteraction`
+- учитывает `speed`, `direction` и `gap`
+- не предназначен для обычной пагинации по страницам
+
+Пример:
+
+```js
+const slider = wsSlider(document.querySelector('[data-slider]'), {
+    mode: 'ticker',
+    gap: 32,
+    speed: 0.8,
+    direction: 'left',
+    pauseOnHover: true,
+    pauseOnInteraction: true
+});
+```
+
+### Что выбрать
+
+Используйте `carousel`, если:
+- нужен управляемый слайдер с переключением по шагам
+- важны pagination, autoplay и swipe
+- нужно показывать определённое число слайдов в viewport
+
+Используйте `ticker`, если:
+- нужен непрерывный поток карточек или логотипов
+- важен эффект живой движущейся ленты
+- не требуется обычное перелистывание по страницам
+
+## Публичный API
+
+### wsSlider(sliderNode, options)
+
+Функция для создания и инициализации слайдера.
+
+Параметры:
+
+| Параметр | Тип | Описание |
+|----------|-----|----------|
+| `sliderNode` | `Element` | Корневой DOM-элемент слайдера. |
+| `options` | `object` | Объект параметров инициализации. |
+
+Возвращает:
+
+| Параметр | Тип | Описание |
+|----------|-----|----------|
+| `return` | `SliderController` | Инициализированный экземпляр контроллера слайдера. |
+
+Пример:
+
+```js
+import { wsSlider } from '/core/modules/ws-slider/assets/js/initial.js';
+
+const slider = wsSlider(document.querySelector('[data-slider]'), {
+    mode: 'carousel',
+    perView: 1,
+    gap: 20,
+    loop: true
+});
+```
+
+## Ограничения и замечания
+
+- модуль ожидает корректную DOM-структуру с `viewport`, `track` и хотя бы одним `slide`
+- в режиме `carousel` параметры `autoplay`, `loop` и `swipe` работают только внутри логики `carousel`
+- в режиме `ticker` слайды дублируются для непрерывного движения ленты
+- после изменения набора слайдов или структуры DOM вызовите `update()`
+- `breakpoints` переопределяют базовые параметры в зависимости от ширины viewport
