@@ -1,21 +1,28 @@
 {
   "aliases": {
-    "stable": "v1.0"
+    "latest": "v0.94",
+    "stable": "v0.94"
   },
   "versions": {
-    "latest": {
-      "label": "Latest",
-      "public": true
-    },
-    "v1.0": {
-      "label": "1.0",
+    "v0.87": {
+      "label": "0.87",
       "public": true,
-      "order": 100
+      "order": 870
     },
-    "v1.1": {
-      "label": "1.1",
+    "v0.88": {
+      "label": "0.88",
       "public": true,
-      "order": 110
+      "order": 880
+    },
+    "v0.89": {
+      "label": "0.89",
+      "public": true,
+      "order": 890
+    },
+    "v0.94": {
+      "label": "0.94",
+      "public": true,
+      "order": 940
     }
   }
 }
