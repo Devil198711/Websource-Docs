@@ -1,28 +1,33 @@
 {
-  "aliases": {
-    "latest": "v0.94",
-    "stable": "v0.94"
-  },
-  "versions": {
-    "v0.87": {
-      "label": "0.87",
-      "public": true,
-      "order": 870
+    "aliases": {
+        "latest": "v0.95",
+        "stable": "v0.95"
     },
-    "v0.88": {
-      "label": "0.88",
-      "public": true,
-      "order": 880
-    },
-    "v0.89": {
-      "label": "0.89",
-      "public": true,
-      "order": 890
-    },
-    "v0.94": {
-      "label": "0.94",
-      "public": true,
-      "order": 940
+    "versions": {
+        "v0.87": {
+            "label": "0.87",
+            "public": true,
+            "order": 870
+        },
+        "v0.88": {
+            "label": "0.88",
+            "public": true,
+            "order": 880
+        },
+        "v0.89": {
+            "label": "0.89",
+            "public": true,
+            "order": 890
+        },
+        "v0.94": {
+            "label": "0.94",
+            "public": true,
+            "order": 940
+        },
+        "v0.95": {
+            "label": "0.95",
+            "public": true,
+            "order": 950
+        }
     }
-  }
 }
