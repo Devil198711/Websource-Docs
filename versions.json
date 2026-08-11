@@ -1,7 +1,7 @@
 {
     "aliases": {
-        "latest": "v0.95",
-        "stable": "v0.95"
+        "latest": "v0.973",
+        "stable": "v0.973"
     },
     "versions": {
         "v0.87": {
@@ -28,6 +28,21 @@
             "label": "0.95",
             "public": true,
             "order": 950
+        },
+        "v0.97": {
+            "label": "0.97",
+            "public": true,
+            "order": 970
+        },
+        "v0.971": {
+            "label": "0.971",
+            "public": true,
+            "order": 971
+        },
+        "v0.973": {
+            "label": "0.973",
+            "public": true,
+            "order": 973
         }
     }
 }
