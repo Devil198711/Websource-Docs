@@ -1,9 +1,19 @@
 {
     "aliases": {
-        "latest": "v0.996",
-        "stable": "v0.996"
+        "latest": "v1.0",
+        "stable": "v1.0"
     },
     "versions": {
+        "v1.0": {
+            "label": "1.0",
+            "public": true,
+            "order": 1000
+        },
+        "v0.997": {
+            "label": "0.997",
+            "public": true,
+            "order": 997
+        },
         "v0.996": {
             "label": "0.996",
             "public": true,
